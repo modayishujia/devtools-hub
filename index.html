@@ -1,0 +1,2970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTools Hub - Professional Developer Tools</title>
+    <meta name="description" content="Professional online developer tools: JSON visualizer, API tester, regex debugger, code screenshot, JWT decoder, SQL formatter, and more.">
+    <link rel="canonical" href="https://devtoolshub.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent: #22d3ee;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--surface-light);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .stat-item span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        /* Navigation */
+        nav {
+            background: var(--surface);
+            border-right: 1px solid var(--surface-light);
+            width: 220px;
+            min-height: calc(100vh - 60px);
+            position: fixed;
+            top: 60px;
+            left: 0;
+            overflow-y: auto;
+            z-index: 50;
+        }
+        
+        .nav-container {
+            padding: 0.75rem;
+        }
+        
+        .nav-group {
+            margin-bottom: 0.75rem;
+        }
+        
+        .nav-group-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 0.75rem;
+            font-weight: 600;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: var(--surface-light);
+            margin: 0.5rem 0.75rem;
+        }
+        
+        .nav-btn {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s;
+            text-decoration: none;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .nav-btn:hover {
+            background: var(--surface-light);
+            color: var(--text);
+        }
+        
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .ad-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+        
+        .ad-container {
+            margin: 1rem 0;
+        }
+        
+        .nav-btn:hover {
+            background: var(--surface-light);
+            color: var(--text);
+        }
+        
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-btn .badge {
+            background: var(--accent);
+            color: var(--bg);
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .content-area {
+            flex: 1;
+            margin-left: 220px;
+            margin-right: 320px;
+            padding: 1.5rem;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .tool-section {
+            display: none;
+            background: var(--surface);
+            border-radius: 16px;
+            border: 1px solid var(--surface-light);
+            overflow: hidden;
+        }
+        
+        .tool-section.active {
+            display: block;
+        }
+        
+        .tool-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--surface-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .tool-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .tool-title h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .tool-title .icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .tool-description {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .tool-body {
+            padding: 1.5rem;
+        }
+        
+        /* Split Layout */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 900px) {
+            .split-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--surface-light);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            padding: 0.75rem 1rem;
+            background: var(--surface-light);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .panel-body {
+            padding: 1rem;
+        }
+        
+        /* Form Elements */
+        textarea, input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--surface);
+            border: 1px solid var(--surface-light);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+        
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--surface-light);
+            color: var(--text);
+        }
+        
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+            color: var(--bg);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        /* JSON Tree */
+        .json-tree {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .json-key {
+            color: var(--accent);
+        }
+        
+        .json-string {
+            color: var(--success);
+        }
+        
+        .json-number {
+            color: var(--warning);
+        }
+        
+        .json-boolean {
+            color: var(--primary);
+        }
+        
+        .json-null {
+            color: var(--text-muted);
+        }
+        
+        .json-toggle {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .json-toggle:hover {
+            opacity: 0.8;
+        }
+        
+        .json-collapsed {
+            display: none;
+        }
+        
+        /* Code Block */
+        .code-block {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .code-block .keyword { color: var(--primary); }
+        .code-block .string { color: var(--success); }
+        .code-block .number { color: var(--warning); }
+        .code-block .comment { color: var(--text-muted); }
+        
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .option-card {
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .option-card:hover {
+            border-color: var(--primary);
+        }
+        
+        .option-card.selected {
+            border-color: var(--accent);
+            background: rgba(34, 211, 238, 0.1);
+        }
+        
+        .option-card h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .option-card p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* Output Area */
+        .output-area {
+            background: var(--bg);
+            border: 1px solid var(--surface-light);
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 200px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            overflow: auto;
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem;
+            background: var(--surface-light);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .stat {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .stat strong {
+            color: var(--text);
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--surface-light);
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+        
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin: 0.25rem 0;
+        }
+        
+        .footer-disclaimer {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+        
+        /* Syntax Highlighting */
+        .syntax-line {
+            display: flex;
+        }
+        
+        .line-number {
+            color: var(--text-muted);
+            min-width: 3rem;
+            text-align: right;
+            padding-right: 1rem;
+            user-select: none;
+        }
+        
+        .line-content {
+            flex: 1;
+        }
+        
+        #code-img-display {
+            font-size: 0.875rem;
+            line-height: 1.7;
+        }
+        
+        #code-img-display div {
+            display: flex;
+            padding: 0 0.25rem;
+        }
+        
+        #code-img-display div:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Diff View */
+        .diff-add {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 3px solid var(--success);
+        }
+        
+        .diff-remove {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 3px solid var(--error);
+        }
+        
+        .diff-change {
+            background: rgba(245, 158, 11, 0.2);
+            border-left: 3px solid var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <div>
+                    <h1>DevTools Hub</h1>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item"><span>15+</span> Tools</div>
+                <div class="stat-item"><span>100%</span> Free</div>
+                <div class="stat-item"><span>No</span> Ads</div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="layout">
+        <!-- Sidebar Ad - Top -->
+        <div style="position: fixed; top: 60px; right: 0; width: 300px; height: 250px; background: var(--surface); border: 1px dashed var(--surface-light); display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--text-muted); font-size: 0.875rem; z-index: 40;">
+            <!-- AdSense Sidebar: 300x250 -->
+            <!-- <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX"></ins> -->
+            <span>Sidebar Ad (300×250)</span>
+        </div>
+        
+        <nav>
+            <div class="nav-container">
+                <div class="nav-group">
+                    <div class="nav-group-title">Developer Tools</div>
+                    <a href="#json-tree" class="nav-btn active" onclick="showTool('json-tree')">🌳 JSON Tree</a>
+                    <a href="#jwt" class="nav-btn" onclick="showTool('jwt')">🔐 JWT Decoder</a>
+                    <a href="#regex" class="nav-btn" onclick="showTool('regex')">🎯 Regex Debugger</a>
+                    <a href="#sql" class="nav-btn" onclick="showTool('sql')">🗄️ SQL Formatter</a>
+                </div>
+                <div class="nav-divider"></div>
+                <div class="nav-group">
+                    <a href="#code-img" class="nav-btn" onclick="showTool('code-img')">📸 Code Screenshot</a>
+                    <a href="#diff" class="nav-btn" onclick="showTool('diff')">📊 Text Diff</a>
+                    <a href="#color" class="nav-btn" onclick="showTool('color')">🎨 Color Tool</a>
+                    <a href="#cron" class="nav-btn" onclick="showTool('cron')">⏰ Cron Helper</a>
+                </div>
+                <div class="nav-divider"></div>
+                <div class="nav-group">
+                    <a href="#timestamp" class="nav-btn" onclick="showTool('timestamp')">🕐 Timestamp</a>
+                    <a href="#hash" class="nav-btn" onclick="showTool('hash')">🔢 Hash Generator</a>
+                </div>
+                <div class="nav-divider"></div>
+                <div class="nav-group">
+                    <div class="nav-group-title">AI Tools</div>
+                    <a href="#ai-tools" class="nav-btn" onclick="showTool('ai-tools')">🤖 AI Tools Hub</a>
+                    <a href="#prompt" class="nav-btn" onclick="showTool('prompt')">💬 Prompt Optimizer</a>
+                    <a href="#token" class="nav-btn" onclick="showTool('token')">🎫 Token Counter</a>
+                </div>
+                <div class="nav-divider"></div>
+                <div class="nav-group">
+                    <div class="nav-group-title">Info</div>
+                    <a href="#about" class="nav-btn" onclick="showTool('about')">ℹ️ About</a>
+                    <a href="#privacy" class="nav-btn" onclick="showTool('privacy')">🔒 Privacy Policy</a>
+                    <a href="#terms" class="nav-btn" onclick="showTool('terms')">📋 Terms of Service</a>
+                    <a href="#contact" class="nav-btn" onclick="showTool('contact')">✉️ Contact Us</a>
+                </div>
+                
+                <!-- Sidebar Ad -->
+                <div class="nav-divider"></div>
+                <div style="padding: 0.75rem;">
+                    <div class="ad-label">Advertisement</div>
+                    <div style="width: 100%; height: 250px; background: var(--bg); border: 1px dashed var(--surface-light); display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--text-muted); font-size: 0.75rem;">
+                        <!-- AdSense Sidebar: 300x250 -->
+                        <!-- <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX"></ins> -->
+                        <span>300×250</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <main class="content-area">
+        <!-- JSON Tree Visualizer -->
+        <section id="json-tree" class="tool-section active">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🌳</div>
+                    <div>
+                        <h2>JSON Tree Visualizer</h2>
+                        <p class="tool-description">Visualize JSON as an interactive tree structure with collapsible nodes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">
+                            INPUT JSON
+                            <button class="btn btn-secondary" onclick="loadSampleJSON()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Load Sample</button>
+                        </div>
+                        <div class="panel-body">
+                            <textarea id="json-tree-input" placeholder="Paste your JSON here...">{
+  "name": "DevTools Hub",
+  "version": "2.0",
+  "features": ["JSON Tree", "JWT Decoder", "Regex Debugger"],
+  "config": {
+    "theme": "dark",
+    "language": "en",
+    "notifications": true
+  },
+  "stats": {
+    "users": 12500,
+    "tools": 15,
+    "rating": 4.8
+  }
+}</textarea>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            TREE VIEW
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" onclick="expandAll()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Expand All</button>
+                                <button class="btn btn-secondary" onclick="collapseAll()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Collapse All</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="json-tree-output" class="json-tree"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-bar" id="json-stats"></div>
+            </div>
+        </section>
+        
+        <!-- JWT Decoder -->
+        <section id="jwt" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🔐</div>
+                    <div>
+                        <h2>JWT Decoder</h2>
+                        <p class="tool-description">Decode and inspect JSON Web Tokens with expiration checking</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">JWT TOKEN</div>
+                        <div class="panel-body">
+                            <textarea id="jwt-input" placeholder="Paste your JWT token here...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTYyMzkwMjIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</textarea>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-primary" onclick="decodeJWT()">Decode JWT</button>
+                                <button class="btn btn-secondary" onclick="loadSampleJWT()">Load Sample</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">DECODED PAYLOAD</div>
+                        <div class="panel-body">
+                            <div id="jwt-output" class="output-area"></div>
+                            <div id="jwt-status" class="stats-bar" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Regex Debugger -->
+        <section id="regex" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <h2>Regex Debugger</h2>
+                        <p class="tool-description">Test and debug regular expressions with real-time matching</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="panel" style="margin-bottom: 1rem;">
+                    <div class="panel-header">REGEX PATTERN</div>
+                    <div class="panel-body">
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <span style="color: var(--text-muted); font-family: monospace;">/</span>
+                            <input type="text" id="regex-pattern" placeholder="Enter regex pattern..." value="(\w+)@(\w+)\.(\w+)" style="flex: 1;">
+                            <span style="color: var(--text-muted); font-family: monospace;">/</span>
+                            <input type="text" id="regex-flags" value="gi" style="width: 80px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">TEST STRING</div>
+                        <div class="panel-body">
+                            <textarea id="regex-input" placeholder="Enter test string...">Contact us at support@devtoolshub.com or sales@example.org for more information.</textarea>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            MATCHES
+                            <span id="regex-match-count" style="color: var(--accent);">0 matches</span>
+                        </div>
+                        <div class="panel-body">
+                            <div id="regex-output" class="output-area"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" style="margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="testRegex()">Test Regex</button>
+                    <button class="btn btn-secondary" onclick="showRegexCheatsheet()">📋 Cheatsheet</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- SQL Formatter -->
+        <section id="sql" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🗄️</div>
+                    <div>
+                        <h2>SQL Formatter</h2>
+                        <p class="tool-description">Format and beautify SQL queries with syntax highlighting</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">
+                            INPUT SQL
+                            <button class="btn btn-secondary" onclick="loadSampleSQL()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Load Sample</button>
+                        </div>
+                        <div class="panel-body">
+                            <textarea id="sql-input" placeholder="Paste your SQL query...">SELECT u.id, u.name, u.email, o.total, o.created_at FROM users u INNER JOIN orders o ON u.id = o.user_id WHERE o.created_at > '2024-01-01' AND o.status = 'completed' ORDER BY o.created_at DESC LIMIT 100</textarea>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">FORMATTED SQL</div>
+                        <div class="panel-body">
+                            <div id="sql-output" class="code-block"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" style="margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="formatSQL()">Format SQL</button>
+                    <button class="btn btn-secondary" onclick="minifySQL()">Minify</button>
+                    <button class="btn btn-secondary" onclick="copyOutput('sql-output')">Copy Output</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Code Screenshot -->
+        <section id="code-img" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">📸</div>
+                    <div>
+                        <h2>Code Screenshot Generator</h2>
+                        <p class="tool-description">Create beautiful code images for social media and documentation</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">CODE INPUT</div>
+                        <div class="panel-body">
+                            <textarea id="code-img-input" placeholder="Paste your code here...">function fibonacci(n) {
+  if (n <= 1) return n;
+  
+  let a = 0, b = 1;
+  for (let i = 2; i <= n; i++) {
+    [a, b] = [b, a + b];
+  }
+  
+  return b;
+}
+
+console.log(fibonacci(10)); // 55</textarea>
+                            <div class="options-grid" style="margin-top: 1rem;">
+                                <div>
+                                    <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Theme</label>
+                                    <select id="code-theme" style="font-size: 0.875rem;">
+                                        <option value="monokai">Monokai</option>
+                                        <option value="github">GitHub</option>
+                                        <option value="dracula">Dracula</option>
+                                        <option value="nord">Nord</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Language</label>
+                                    <select id="code-lang" style="font-size: 0.875rem;">
+                                        <option value="javascript">JavaScript</option>
+                                        <option value="python">Python</option>
+                                        <option value="typescript">TypeScript</option>
+                                        <option value="rust">Rust</option>
+                                        <option value="go">Go</option>
+                                        <option value="java">Java</option>
+                                        <option value="cpp">C++</option>
+                                        <option value="csharp">C#</option>
+                                        <option value="php">PHP</option>
+                                        <option value="ruby">Ruby</option>
+                                        <option value="swift">Swift</option>
+                                        <option value="kotlin">Kotlin</option>
+                                        <option value="sql">SQL</option>
+                                        <option value="html">HTML</option>
+                                        <option value="css">CSS</option>
+                                        <option value="json">JSON</option>
+                                        <option value="yaml">YAML</option>
+                                        <option value="bash">Bash</option>
+                                        <option value="markdown">Markdown</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-accent" onclick="generateCodeImage()">📸 Generate Image</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">PREVIEW</div>
+                        <div class="panel-body">
+                            <div id="code-img-preview" style="background: #282a36; border-radius: 12px; padding: 2rem; min-height: 300px;">
+                                <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+                                </div>
+                                <pre id="code-img-display" style="color: #f8f8f2; font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; line-height: 1.6; white-space: pre-wrap;"></pre>
+                            </div>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-secondary" onclick="downloadCodeImage()">⬇️ Download PNG</button>
+                                <button class="btn btn-secondary" onclick="copyCodeImage()">📋 Copy Image</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Text Diff -->
+        <section id="diff" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">📊</div>
+                    <div>
+                        <h2>Text Diff Checker</h2>
+                        <p class="tool-description">Compare two texts and highlight differences</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">ORIGINAL TEXT</div>
+                        <div class="panel-body">
+                            <textarea id="diff-left" placeholder="Original text...">The quick brown fox jumps over the lazy dog.
+Hello World!
+This is version 1.0.</textarea>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">MODIFIED TEXT</div>
+                        <div class="panel-body">
+                            <textarea id="diff-right" placeholder="Modified text...">The quick brown fox leaps over the lazy dog.
+Hello DevTools!
+This is version 2.0 with new features.</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" style="margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="compareDiff()">Compare Texts</button>
+                    <button class="btn btn-secondary" onclick="swapDiff()">🔄 Swap</button>
+                </div>
+                <div id="diff-output" class="output-area" style="margin-top: 1rem;"></div>
+            </div>
+        </section>
+        
+        <!-- Color Tool -->
+        <section id="color" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🎨</div>
+                    <div>
+                        <h2>Color Palette Generator</h2>
+                        <p class="tool-description">Generate beautiful color palettes and check contrast ratios</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="panel" style="margin-bottom: 1rem;">
+                    <div class="panel-header">BASE COLOR</div>
+                    <div class="panel-body" style="display: flex; gap: 1rem; align-items: center;">
+                        <input type="color" id="color-base" value="#6366f1" style="width: 60px; height: 40px; border: none; cursor: pointer;">
+                        <input type="text" id="color-hex" value="#6366f1" style="flex: 1;">
+                        <button class="btn btn-primary" onclick="generatePalette()">Generate Palette</button>
+                        <button class="btn btn-secondary" onclick="randomColor()">🎲 Random</button>
+                    </div>
+                </div>
+                <div id="color-palette" class="options-grid" style="grid-template-columns: repeat(5, 1fr);"></div>
+                <div class="panel" style="margin-top: 1rem;">
+                    <div class="panel-header">CONTRAST CHECKER</div>
+                    <div class="panel-body">
+                        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Foreground</label>
+                                <input type="color" id="contrast-fg" value="#ffffff" style="width: 50px; height: 35px; border: none; cursor: pointer;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Background</label>
+                                <input type="color" id="contrast-bg" value="#6366f1" style="width: 50px; height: 35px; border: none; cursor: pointer;">
+                            </div>
+                            <button class="btn btn-primary" onclick="checkContrast()">Check Contrast</button>
+                        </div>
+                        <div id="contrast-result" style="padding: 1rem; background: var(--bg); border-radius: 8px;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Cron Helper -->
+        <section id="cron" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">⏰</div>
+                    <div>
+                        <h2>Cron Expression Builder</h2>
+                        <p class="tool-description">Build and understand cron expressions with visual preview</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">BUILD CRON</div>
+                        <div class="panel-body">
+                            <div class="options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                                <div>
+                                    <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Minute</label>
+                                    <input type="text" id="cron-minute" value="0" placeholder="0-59">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Hour</label>
+                                    <input type="text" id="cron-hour" value="*" placeholder="0-23">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Day of Month</label>
+                                    <input type="text" id="cron-day" value="*" placeholder="1-31">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Month</label>
+                                    <input type="text" id="cron-month" value="*" placeholder="1-12">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Day of Week</label>
+                                    <input type="text" id="cron-weekday" value="*" placeholder="0-6">
+                                </div>
+                            </div>
+                            <div class="panel" style="margin-top: 1rem; background: var(--bg);">
+                                <div class="panel-header">EXPRESSION</div>
+                                <div class="panel-body">
+                                    <div id="cron-expression" style="font-family: monospace; font-size: 1.25rem; color: var(--accent); text-align: center;">0 * * * *</div>
+                                </div>
+                            </div>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-primary" onclick="updateCron()">Update Expression</button>
+                                <button class="btn btn-secondary" onclick="copyText(document.getElementById('cron-expression').textContent)">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">NEXT EXECUTIONS</div>
+                        <div class="panel-body">
+                            <div id="cron-next" class="output-area"></div>
+                            <div class="panel" style="margin-top: 1rem; background: var(--bg);">
+                                <div class="panel-header">COMMON PRESETS</div>
+                                <div class="panel-body">
+                                    <div class="options-grid" style="grid-template-columns: 1fr;">
+                                        <div class="option-card" onclick="setCronPreset('0 * * * *')">
+                                            <h4>Every Hour</h4>
+                                            <p>0 * * * *</p>
+                                        </div>
+                                        <div class="option-card" onclick="setCronPreset('0 0 * * *')">
+                                            <h4>Daily at Midnight</h4>
+                                            <p>0 0 * * *</p>
+                                        </div>
+                                        <div class="option-card" onclick="setCronPreset('0 0 * * 0')">
+                                            <h4>Weekly on Sunday</h4>
+                                            <p>0 0 * * 0</p>
+                                        </div>
+                                        <div class="option-card" onclick="setCronPreset('0 0 1 * *')">
+                                            <h4>Monthly on 1st</h4>
+                                            <p>0 0 1 * *</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Timestamp -->
+        <section id="timestamp" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🕐</div>
+                    <div>
+                        <h2>Unix Timestamp Converter</h2>
+                        <p class="tool-description">Convert between Unix timestamps and human-readable dates</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">CURRENT TIMESTAMP</div>
+                        <div class="panel-body">
+                            <div style="text-align: center; padding: 2rem;">
+                                <div id="current-timestamp" style="font-family: monospace; font-size: 2rem; color: var(--accent);"></div>
+                                <div id="current-date" style="color: var(--text-muted); margin-top: 0.5rem;"></div>
+                            </div>
+                            <button class="btn btn-primary" onclick="refreshTimestamp()" style="width: 100%;">🔄 Refresh</button>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">CONVERT</div>
+                        <div class="panel-body">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Timestamp to Date</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="ts-to-date" placeholder="Enter timestamp..." style="flex: 1;">
+                                    <button class="btn btn-primary" onclick="timestampToDate()">Convert</button>
+                                </div>
+                                <div id="ts-to-date-result" style="margin-top: 0.5rem; color: var(--accent);"></div>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Date to Timestamp</label>
+                                <input type="datetime-local" id="date-to-ts" style="margin-bottom: 0.5rem;">
+                                <button class="btn btn-primary" onclick="dateToTimestamp()" style="width: 100%;">Convert</button>
+                                <div id="date-to-ts-result" style="margin-top: 0.5rem; color: var(--accent);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Hash Generator -->
+        <section id="hash" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🔢</div>
+                    <div>
+                        <h2>Hash Generator</h2>
+                        <p class="tool-description">Generate MD5, SHA-1, SHA-256, and SHA-512 hashes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="panel" style="margin-bottom: 1rem;">
+                    <div class="panel-header">INPUT TEXT</div>
+                    <div class="panel-body">
+                        <textarea id="hash-input" placeholder="Enter text to hash..." style="min-height: 100px;">Hello, DevTools Hub!</textarea>
+                        <div class="btn-group" style="margin-top: 1rem;">
+                            <button class="btn btn-primary" onclick="generateAllHashes()">Generate All Hashes</button>
+                            <button class="btn btn-secondary" onclick="clearHashInput()">Clear</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">HASH OUTPUT</div>
+                    <div class="panel-body">
+                        <div id="hash-output" class="output-area" style="min-height: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- AI Tools Collection -->
+        <section id="ai-tools" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🤖</div>
+                    <div>
+                        <h2>AI Developer Tools</h2>
+                        <p class="tool-description">Essential tools for AI/ML development and prompt engineering</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="options-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+                    <div class="option-card" onclick="showTool('prompt')" style="cursor: pointer;">
+                        <h4>💬 Prompt Optimizer</h4>
+                        <p>Optimize and improve your AI prompts for better results</p>
+                    </div>
+                    <div class="option-card" onclick="showTool('token')" style="cursor: pointer;">
+                        <h4>🎫 Token Counter</h4>
+                        <p>Count tokens for OpenAI, Claude, and other LLMs</p>
+                    </div>
+                    <div class="option-card" onclick="showTool('json-schema')" style="cursor: pointer;">
+                        <h4>📋 JSON Schema Generator</h4>
+                        <p>Generate JSON Schema from sample data for Function Calling</p>
+                    </div>
+                    <div class="option-card" onclick="showTool('regex-gen')" style="cursor: pointer;">
+                        <h4>🎯 Regex Generator</h4>
+                        <p>Generate regular expressions from natural language</p>
+                    </div>
+                    <div class="option-card" onclick="showTool('text-tools')" style="cursor: pointer;">
+                        <h4>📝 Text Tools</h4>
+                        <p>Word counter, character count, reading time calculator</p>
+                    </div>
+                    <div class="option-card" onclick="showTool('color-palette')" style="cursor: pointer;">
+                        <h4>🎨 Color Palette Generator</h4>
+                        <p>Generate harmonious color palettes from base color</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Prompt Optimizer -->
+        <section id="prompt" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">💬</div>
+                    <div>
+                        <h2>Prompt Optimizer</h2>
+                        <p class="tool-description">Transform vague prompts into effective, structured instructions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">YOUR PROMPT</div>
+                        <div class="panel-body">
+                            <textarea id="prompt-input" placeholder="Enter your prompt here...">Write a blog post about JavaScript</textarea>
+                            <div class="options-grid" style="margin-top: 1rem; grid-template-columns: repeat(2, 1fr);">
+                                <div>
+                                    <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Target Model</label>
+                                    <select id="prompt-model" style="font-size: 0.875rem;">
+                                        <option value="gpt4">GPT-4 / Claude</option>
+                                        <option value="gpt35">GPT-3.5</option>
+                                        <option value="llama">Llama / Open Source</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Task Type</label>
+                                    <select id="prompt-task" style="font-size: 0.875rem;">
+                                        <option value="writing">Writing</option>
+                                        <option value="coding">Coding</option>
+                                        <option value="analysis">Analysis</option>
+                                        <option value="creative">Creative</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-primary" onclick="optimizePrompt()">✨ Optimize Prompt</button>
+                                <button class="btn btn-secondary" onclick="loadSamplePrompt()">Load Sample</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">OPTIMIZED PROMPT</div>
+                        <div class="panel-body">
+                            <div id="prompt-output" class="output-area" style="min-height: 300px;"></div>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-secondary" onclick="copyOutput('prompt-output')">📋 Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Token Counter -->
+        <section id="token" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🎫</div>
+                    <div>
+                        <h2>Token Counter</h2>
+                        <p class="tool-description">Count tokens and estimate API costs for OpenAI, Claude, and more</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">INPUT TEXT</div>
+                        <div class="panel-body">
+                            <textarea id="token-input" placeholder="Paste your text here..." style="min-height: 200px;">The quick brown fox jumps over the lazy dog. This is a sample text to demonstrate token counting for various AI models.</textarea>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-primary" onclick="countTokens()">Count Tokens</button>
+                                <button class="btn btn-secondary" onclick="clearTokenInput()">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">TOKEN ANALYSIS</div>
+                        <div class="panel-body">
+                            <div id="token-output" class="output-area"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel" style="margin-top: 1rem;">
+                    <div class="panel-header">PRICING REFERENCE</div>
+                    <div class="panel-body">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 0.5rem;">GPT-4o</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Input: $2.50 / 1M tokens</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Output: $10.00 / 1M tokens</div>
+                            </div>
+                            <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 0.5rem;">GPT-4o-mini</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Input: $0.15 / 1M tokens</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Output: $0.60 / 1M tokens</div>
+                            </div>
+                            <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 0.5rem;">Claude 3.5 Sonnet</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Input: $3.00 / 1M tokens</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Output: $15.00 / 1M tokens</div>
+                            </div>
+                            <div style="padding: 1rem; background: var(--bg); border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 0.5rem;">Llama 3.1 70B</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Input: $0.88 / 1M tokens</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Output: $0.88 / 1M tokens</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- JSON Schema Generator -->
+        <section id="json-schema" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">📋</div>
+                    <div>
+                        <h2>JSON Schema Generator</h2>
+                        <p class="tool-description">Generate JSON Schema from sample data for OpenAI Function Calling</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">SAMPLE JSON</div>
+                        <div class="panel-body">
+                            <textarea id="schema-input" placeholder="Paste sample JSON here...">{
+  "name": "John Doe",
+  "age": 30,
+  "email": "john@example.com",
+  "is_active": true,
+  "tags": ["developer", "designer"],
+  "address": {
+    "street": "123 Main St",
+    "city": "New York"
+  }
+}</textarea>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-primary" onclick="generateSchema()">Generate Schema</button>
+                                <button class="btn btn-secondary" onclick="loadSampleSchema()">Load Sample</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">JSON SCHEMA</div>
+                        <div class="panel-body">
+                            <div id="schema-output" class="output-area" style="min-height: 300px;"></div>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-secondary" onclick="copyOutput('schema-output')">📋 Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Regex Generator -->
+        <section id="regex-gen" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🎯</div>
+                    <div>
+                        <h2>Regex Generator</h2>
+                        <p class="tool-description">Generate regular expressions from natural language descriptions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="panel" style="margin-bottom: 1rem;">
+                    <div class="panel-header">DESCRIPTION</div>
+                    <div class="panel-body">
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <input type="text" id="regex-desc-input" placeholder="e.g., email address, phone number, URL..." style="flex: 1;">
+                            <button class="btn btn-primary" onclick="generateRegex()">Generate</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">COMMON PATTERNS</div>
+                    <div class="panel-body">
+                        <div class="options-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                            <div class="option-card" onclick="setRegexPattern('email')">
+                                <h4>📧 Email Address</h4>
+                                <p style="font-family: monospace; font-size: 0.75rem;">^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$</p>
+                            </div>
+                            <div class="option-card" onclick="setRegexPattern('phone')">
+                                <h4>📱 Phone Number (US)</h4>
+                                <p style="font-family: monospace; font-size: 0.75rem;">^\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}$</p>
+                            </div>
+                            <div class="option-card" onclick="setRegexPattern('url')">
+                                <h4>🔗 URL</h4>
+                                <p style="font-family: monospace; font-size: 0.75rem;">^https?:\\/\\/[\\w\\-]+(\\.[\\w\\-]+)+[\\/\\w\\-.~:/?#[\\]@!$&'()*+,;=%]*$</p>
+                            </div>
+                            <div class="option-card" onclick="setRegexPattern('ip')">
+                                <h4>🌐 IPv4 Address</h4>
+                                <p style="font-family: monospace; font-size: 0.75rem;">^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$</p>
+                            </div>
+                            <div class="option-card" onclick="setRegexPattern('date')">
+                                <h4>📅 Date (YYYY-MM-DD)</h4>
+                                <p style="font-family: monospace; font-size: 0.75rem;">^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$</p>
+                            </div>
+                            <div class="option-card" onclick="setRegexPattern('hex')">
+                                <h4>🎨 Hex Color</h4>
+                                <p style="font-family: monospace; font-size: 0.75rem;">^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel" style="margin-top: 1rem;">
+                    <div class="panel-header">GENERATED PATTERN</div>
+                    <div class="panel-body">
+                        <div id="regex-gen-output" class="output-area"></div>
+                        <div class="btn-group" style="margin-top: 1rem;">
+                            <button class="btn btn-secondary" onclick="copyOutput('regex-gen-output')">📋 Copy</button>
+                            <button class="btn btn-secondary" onclick="testGeneratedRegex()">🧪 Test in Regex Debugger</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Text Tools -->
+        <section id="text-tools" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">📝</div>
+                    <div>
+                        <h2>Text Analysis Tools</h2>
+                        <p class="tool-description">Word count, character count, reading time, and text statistics</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="panel" style="margin-bottom: 1rem;">
+                    <div class="panel-header">INPUT TEXT</div>
+                    <div class="panel-body">
+                        <textarea id="text-tools-input" placeholder="Paste your text here..." style="min-height: 150px;">The quick brown fox jumps over the lazy dog. This is a sample text for analysis. It contains multiple sentences and paragraphs to demonstrate the text analysis tools available here.</textarea>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">ANALYSIS RESULTS</div>
+                    <div class="panel-body">
+                        <div id="text-tools-output" class="output-area"></div>
+                    </div>
+                </div>
+                <div class="btn-group" style="margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="analyzeText()">📊 Analyze Text</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Color Palette Generator -->
+        <section id="color-palette" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🎨</div>
+                    <div>
+                        <h2>Color Palette Generator</h2>
+                        <p class="tool-description">Generate harmonious color palettes from a base color</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="panel" style="margin-bottom: 1rem;">
+                    <div class="panel-header">BASE COLOR</div>
+                    <div class="panel-body" style="display: flex; gap: 1rem; align-items: center;">
+                        <input type="color" id="palette-base-color" value="#6366f1" style="width: 60px; height: 40px; border: none; cursor: pointer;">
+                        <input type="text" id="palette-hex" value="#6366f1" style="flex: 1;">
+                        <select id="palette-scheme" style="font-size: 0.875rem;">
+                            <option value="complementary">Complementary</option>
+                            <option value="analogous">Analogous</option>
+                            <option value="triadic">Triadic</option>
+                            <option value="split">Split-Complementary</option>
+                            <option value="shades">Shades</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="generateColorPalette()">Generate</button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">GENERATED PALETTE</div>
+                    <div class="panel-body">
+                        <div id="palette-output" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About Page -->
+        <section id="about" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">ℹ️</div>
+                    <div>
+                        <h2>About DevTools Hub</h2>
+                        <p class="tool-description">Professional developer tools for everyone</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="panel">
+                    <div class="panel-body" style="line-height: 1.8;">
+                        <h3 style="color: var(--accent); margin-bottom: 1rem;">Welcome to DevTools Hub</h3>
+                        <p>DevTools Hub is a free collection of professional developer tools designed to boost your productivity. Whether you're a seasoned developer or just starting out, our tools help you work faster and smarter.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Our Mission</h4>
+                        <p>We believe developer tools should be fast, free, and easy to use. No sign-ups required, no ads cluttering your workspace — just pure utility at your fingertips.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Features</h4>
+                        <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+                            <li>15+ professional developer tools</li>
+                            <li>100% free — no hidden costs</li>
+                            <li>No registration required</li>
+                            <li>Fast, client-side processing</li>
+                            <li>Privacy-focused — your data never leaves your browser</li>
+                            <li>Mobile-friendly responsive design</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Contact Us</h4>
+                        <p>Have questions, suggestions, or feedback? We'd love to hear from you!</p>
+                        <p>Email: <a href="mailto:support@devtoolshub.com" style="color: var(--accent);">support@devtoolshub.com</a></p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Legal</h4>
+                        <p>Please review our <a href="#" onclick="showTool('privacy'); return false;" style="color: var(--accent);">Privacy Policy</a> and <a href="#" onclick="showTool('terms'); return false;" style="color: var(--accent);">Terms of Service</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Privacy Policy -->
+        <section id="privacy" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">🔒</div>
+                    <div>
+                        <h2>Privacy Policy</h2>
+                        <p class="tool-description">Last updated: June 2026</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="panel">
+                    <div class="panel-body" style="line-height: 1.8;">
+                        <h3 style="color: var(--accent); margin-bottom: 1rem;">Privacy Policy for DevTools Hub</h3>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Introduction</h4>
+                        <p>DevTools Hub ("we", "our", or "us") operates the devtoolshub.com website. This page informs you of our policies regarding the collection, use, and disclosure of personal information when you use our Service.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Information Collection and Use</h4>
+                        <p>We do not collect any personal information. All tools process data locally in your browser. Your input data is never sent to our servers.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Log Data</h4>
+                        <p>We may collect information that your browser sends whenever you visit our Service ("Log Data"). This Log Data may include information such as your computer's Internet Protocol ("IP") address, browser type, browser version, the pages of our Service that you visit, the time and date of your visit, and other statistics.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Cookies</h4>
+                        <p>We use cookies to improve your experience. You can choose to have your computer warn you each time a cookie is being sent, or you can choose to turn off all cookies through your browser settings.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Third-Party Services</h4>
+                        <p>We may employ third-party companies and individuals due to the following reasons:</p>
+                        <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+                            <li>To facilitate our Service;</li>
+                            <li>To provide the Service on our behalf;</li>
+                            <li>To perform Service-related services; or</li>
+                            <li>To assist us in analyzing how our Service is used.</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Google AdSense</h4>
+                        <p>We use Google AdSense to display advertisements. Google uses cookies to serve ads based on your prior visits to our website or other websites. Google's use of advertising cookies enables it and its partners to serve ads based on your visit to this site and/or other sites on the Internet.</p>
+                        <p>You may opt out of personalized advertising by visiting <a href="https://www.aboutads.info/choices/" target="_blank" style="color: var(--accent);">Google Ads Settings</a>.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Children's Privacy</h4>
+                        <p>Our Service does not knowingly collect personal information from children under 13. If you are a parent or guardian and you are aware that your child has provided us with personal information, please contact us.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Changes to This Privacy Policy</h4>
+                        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Contact Us</h4>
+                        <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:privacy@devtoolshub.com" style="color: var(--accent);">privacy@devtoolshub.com</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Terms of Service -->
+        <section id="terms" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">📋</div>
+                    <div>
+                        <h2>Terms of Service</h2>
+                        <p class="tool-description">Last updated: June 2026</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="panel">
+                    <div class="panel-body" style="line-height: 1.8;">
+                        <h3 style="color: var(--accent); margin-bottom: 1rem;">Terms of Service for DevTools Hub</h3>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">1. Acceptance of Terms</h4>
+                        <p>By accessing and using DevTools Hub (the "Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to these terms, please do not use our Service.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">2. Description of Service</h4>
+                        <p>DevTools Hub provides a collection of free online developer tools including but not limited to:</p>
+                        <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+                            <li>JSON formatting and visualization tools</li>
+                            <li>Code screenshot generation</li>
+                            <li>Text diff comparison</li>
+                            <li>Color palette generation</li>
+                            <li>AI prompt optimization tools</li>
+                            <li>Various encoding/decoding utilities</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">3. User Responsibilities</h4>
+                        <p>You are responsible for:</p>
+                        <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+                            <li>Ensuring your use of the Service complies with applicable laws</li>
+                            <li>Maintaining the confidentiality of any data you process using our tools</li>
+                            <li>Not using the Service for any illegal or unauthorized purpose</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">4. Intellectual Property</h4>
+                        <p>The Service and its original content, features, and functionality are owned by DevTools Hub and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">5. Data Processing</h4>
+                        <p>All data processing occurs locally in your browser. We do not store, transmit, or have access to any data you input into our tools. You retain full ownership and responsibility for your data.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">6. Disclaimer of Warranties</h4>
+                        <p>The Service is provided "as is" and "as available" without warranties of any kind, whether express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">7. Limitation of Liability</h4>
+                        <p>In no event shall DevTools Hub be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the Service.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">8. Changes to Terms</h4>
+                        <p>We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting. Your continued use of the Service constitutes acceptance of the modified terms.</p>
+                        
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">9. Contact Information</h4>
+                        <p>For any questions about these Terms of Service, please contact us at <a href="mailto:legal@devtoolshub.com" style="color: var(--accent);">legal@devtoolshub.com</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Contact Page -->
+        <section id="contact" class="tool-section">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <div class="icon">✉️</div>
+                    <div>
+                        <h2>Contact Us</h2>
+                        <p class="tool-description">We'd love to hear from you</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-body">
+                <div class="split-layout">
+                    <div class="panel">
+                        <div class="panel-header">SEND US A MESSAGE</div>
+                        <div class="panel-body">
+                            <form id="contact-form" onsubmit="handleContactSubmit(event)">
+                                <div class="tool-group">
+                                    <label style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; display: block;">Your Name</label>
+                                    <input type="text" id="contact-name" placeholder="John Doe" required>
+                                </div>
+                                <div class="tool-group">
+                                    <label style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; display: block;">Email Address</label>
+                                    <input type="email" id="contact-email" placeholder="john@example.com" required>
+                                </div>
+                                <div class="tool-group">
+                                    <label style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; display: block;">Subject</label>
+                                    <select id="contact-subject" style="width: 100%; padding: 0.75rem; background: var(--surface); border: 1px solid var(--surface-light); border-radius: 8px; color: var(--text);">
+                                        <option value="general">General Inquiry</option>
+                                        <option value="bug">Bug Report</option>
+                                        <option value="feature">Feature Request</option>
+                                        <option value="feedback">Feedback</option>
+                                        <option value="business">Business Inquiry</option>
+                                    </select>
+                                </div>
+                                <div class="tool-group">
+                                    <label style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; display: block;">Message</label>
+                                    <textarea id="contact-message" placeholder="Tell us what's on your mind..." style="min-height: 150px;" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Send Message</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">CONTACT INFORMATION</div>
+                        <div class="panel-body">
+                            <div style="margin-bottom: 2rem;">
+                                <h4 style="color: var(--accent); margin-bottom: 0.75rem;">General Inquiries</h4>
+                                <p style="color: var(--text-muted);">Email: <a href="mailto:support@devtoolshub.com" style="color: var(--text);">support@devtoolshub.com</a></p>
+                            </div>
+                            <div style="margin-bottom: 2rem;">
+                                <h4 style="color: var(--accent); margin-bottom: 0.75rem;">Privacy Concerns</h4>
+                                <p style="color: var(--text-muted);">Email: <a href="mailto:privacy@devtoolshub.com" style="color: var(--text);">privacy@devtoolshub.com</a></p>
+                            </div>
+                            <div style="margin-bottom: 2rem;">
+                                <h4 style="color: var(--accent); margin-bottom: 0.75rem;">Legal Matters</h4>
+                                <p style="color: var(--text-muted);">Email: <a href="mailto:legal@devtoolshub.com" style="color: var(--text);">legal@devtoolshub.com</a></p>
+                            </div>
+                            <div style="margin-bottom: 2rem;">
+                                <h4 style="color: var(--accent); margin-bottom: 0.75rem;">Business Inquiries</h4>
+                                <p style="color: var(--text-muted);">Email: <a href="mailto:business@devtoolshub.com" style="color: var(--text);">business@devtoolshub.com</a></p>
+                            </div>
+                            <div style="padding: 1rem; background: var(--bg); border-radius: 8px; margin-top: 1.5rem;">
+                                <h4 style="margin-bottom: 0.5rem;">Response Time</h4>
+                                <p style="color: var(--text-muted); font-size: 0.875rem;">We typically respond within 24-48 hours during business days.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- AdSense In-Content Ad -->
+        <div class="ad-container" style="margin: 1.5rem 0;">
+            <div class="ad-label">Advertisement</div>
+            <div class="ad-placeholder" style="height: 250px; background: var(--surface); border: 1px dashed var(--surface-light); display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--text-muted); font-size: 0.875rem;">
+                <!-- AdSense Rectangle: 300x250 -->
+                <!-- <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX"></ins> -->
+                <span>AdSense Rectangle (300x250)</span>
+            </div>
+        </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#" onclick="showTool('about'); return false;">About</a>
+                <a href="#" onclick="showTool('privacy'); return false;">Privacy</a>
+                <a href="#" onclick="showTool('terms'); return false;">Terms</a>
+                <a href="#" onclick="showTool('contact'); return false;">Contact</a>
+            </div>
+            <p>&copy; 2026 DevTools Hub. Professional developer tools for everyone.</p>
+            <p class="footer-disclaimer">All tools process data locally in your browser. We do not store or transmit your data.</p>
+        </div>
+    </footer>
+    
+    <div id="toast" class="toast">Copied to clipboard!</div>
+    
+    <script>
+        // Navigation with URL routing
+        function showTool(toolId) {
+            // Update URL hash
+            window.location.hash = toolId;
+            
+            // Update UI
+            document.querySelectorAll('.tool-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            const toolSection = document.getElementById(toolId);
+            if (toolSection) {
+                toolSection.classList.add('active');
+            }
+            
+            // Find and activate the corresponding nav button
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const onclick = btn.getAttribute('onclick');
+                if (onclick && onclick.includes(toolId)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Handle URL hash on page load
+        function handleHashNavigation() {
+            const hash = window.location.hash.slice(1); // Remove #
+            if (hash && document.getElementById(hash)) {
+                showTool(hash);
+            }
+        }
+        
+        // Listen for hash changes
+        window.addEventListener('hashchange', handleHashNavigation);
+        
+        // Toast notification
+        function showToast(message = 'Copied to clipboard!') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // Copy to clipboard
+        function copyOutput(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text);
+            showToast();
+        }
+        
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            showToast();
+        }
+        
+        // JSON Tree Visualizer
+        function loadSampleJSON() {
+            document.getElementById('json-tree-input').value = JSON.stringify({
+                "name": "DevTools Hub",
+                "version": "2.0",
+                "features": ["JSON Tree", "JWT Decoder", "Regex Debugger"],
+                "config": { "theme": "dark", "language": "en" },
+                "stats": { "users": 12500, "rating": 4.8 }
+            }, null, 2);
+            renderJSONTree();
+        }
+        
+        function renderJSONTree() {
+            try {
+                const input = document.getElementById('json-tree-input').value;
+                const data = JSON.parse(input);
+                const html = buildTreeHTML(data, 0);
+                document.getElementById('json-tree-output').innerHTML = html;
+                
+                const stats = document.getElementById('json-stats');
+                const keys = countKeys(data);
+                stats.innerHTML = `
+                    <div class="stat">Depth: <strong>${getDepth(data)}</strong></div>
+                    <div class="stat">Keys: <strong>${keys}</strong></div>
+                    <div class="stat">Size: <strong>${new Blob([input]).size} bytes</strong></div>
+                `;
+            } catch (e) {
+                document.getElementById('json-tree-output').innerHTML = `<span style="color: var(--error);">Invalid JSON: ${e.message}</span>`;
+            }
+        }
+        
+        function buildTreeHTML(obj, level, key = null) {
+            const indent = '  '.repeat(level);
+            
+            if (obj === null) return `<span class="json-null">null</span>`;
+            if (typeof obj === 'boolean') return `<span class="json-boolean">${obj}</span>`;
+            if (typeof obj === 'number') return `<span class="json-number">${obj}</span>`;
+            if (typeof obj === 'string') return `<span class="json-string">"${obj}"</span>`;
+            
+            if (Array.isArray(obj)) {
+                if (obj.length === 0) return `<span class="json-null">[]</span>`;
+                const id = 'arr_' + Math.random().toString(36).substr(2, 9);
+                let html = `<span class="json-toggle" onclick="toggleNode('${id}')">▶</span> <span class="json-key">${key ? key + ': ' : ''}</span>[<span style="color: var(--text-muted);"> ${obj.length} items</span>]\n`;
+                html += `<div id="${id}" class="json-children">`;
+                obj.forEach((item, i) => {
+                    html += `${indent}  ${buildTreeHTML(item, level + 1)}${i < obj.length - 1 ? ',' : ''}\n`;
+                });
+                html += `${indent}]</div>`;
+                return html;
+            }
+            
+            if (typeof obj === 'object') {
+                const keys = Object.keys(obj);
+                if (keys.length === 0) return `<span class="json-null">{}</span>`;
+                const id = 'obj_' + Math.random().toString(36).substr(2, 9);
+                let html = `<span class="json-toggle" onclick="toggleNode('${id}')">▶</span> <span class="json-key">${key ? key + ': ' : ''}</span>{<span style="color: var(--text-muted);"> ${keys.length} keys</span>}\n`;
+                html += `<div id="${id}" class="json-children">`;
+                keys.forEach((k, i) => {
+                    html += `${indent}  <span class="json-key">"${k}"</span>: ${buildTreeHTML(obj[k], level + 1, k)}${i < keys.length - 1 ? ',' : ''}\n`;
+                });
+                html += `${indent}}</div>`;
+                return html;
+            }
+            
+            return String(obj);
+        }
+        
+        function toggleNode(id) {
+            const el = document.getElementById(id);
+            const toggle = el.previousElementSibling;
+            if (el.classList.contains('json-collapsed')) {
+                el.classList.remove('json-collapsed');
+                toggle.textContent = '▶';
+            } else {
+                el.classList.add('json-collapsed');
+                toggle.textContent = '▼';
+            }
+        }
+        
+        function expandAll() {
+            document.querySelectorAll('.json-children').forEach(el => el.classList.remove('json-collapsed'));
+            document.querySelectorAll('.json-toggle').forEach(el => el.textContent = '▶');
+        }
+        
+        function collapseAll() {
+            document.querySelectorAll('.json-children').forEach(el => el.classList.add('json-collapsed'));
+            document.querySelectorAll('.json-toggle').forEach(el => el.textContent = '▼');
+        }
+        
+        function getDepth(obj) {
+            if (typeof obj !== 'object' || obj === null) return 0;
+            return 1 + Math.max(...Object.values(obj).map(getDepth), 0);
+        }
+        
+        function countKeys(obj) {
+            if (typeof obj !== 'object' || obj === null) return 0;
+            return Object.keys(obj).length + Object.values(obj).reduce((sum, v) => sum + countKeys(v), 0);
+        }
+        
+        document.getElementById('json-tree-input').addEventListener('input', renderJSONTree);
+        
+        // JWT Decoder
+        function loadSampleJWT() {
+            document.getElementById('jwt-input').value = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTYyMzkwMjIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+            decodeJWT();
+        }
+        
+        function decodeJWT() {
+            const token = document.getElementById('jwt-input').value.trim();
+            const output = document.getElementById('jwt-output');
+            const status = document.getElementById('jwt-status');
+            
+            try {
+                const parts = token.split('.');
+                if (parts.length !== 3) throw new Error('Invalid JWT format');
+                
+                const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+                const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                
+                let html = `<div style="margin-bottom: 1.5rem;">`;
+                html += `<div style="color: var(--accent); font-weight: 600; margin-bottom: 0.5rem;">HEADER:</div>`;
+                html += `<pre style="background: var(--surface); padding: 1rem; border-radius: 8px; overflow-x: auto;">${JSON.stringify(header, null, 2)}</pre>`;
+                html += `</div>`;
+                html += `<div>`;
+                html += `<div style="color: var(--accent); font-weight: 600; margin-bottom: 0.5rem;">PAYLOAD:</div>`;
+                html += `<pre style="background: var(--surface); padding: 1rem; border-radius: 8px; overflow-x: auto;">${JSON.stringify(payload, null, 2)}</pre>`;
+                html += `</div>`;
+                output.innerHTML = html;
+                
+                // Check expiration
+                const now = Math.floor(Date.now() / 1000);
+                const exp = payload.exp;
+                const iat = payload.iat;
+                
+                let statusHtml = '';
+                if (exp) {
+                    if (exp < now) {
+                        statusHtml = `<div class="stat" style="color: var(--error);">⚠️ Token Expired</div>`;
+                    } else {
+                        const remaining = exp - now;
+                        const days = Math.floor(remaining / 86400);
+                        const hours = Math.floor((remaining % 86400) / 3600);
+                        statusHtml = `<div class="stat" style="color: var(--success);">✅ Valid (${days}d ${hours}h remaining)</div>`;
+                    }
+                }
+                if (iat) {
+                    const issued = new Date(iat * 1000).toLocaleString();
+                    statusHtml += `<div class="stat">Issued: <strong>${issued}</strong></div>`;
+                }
+                if (exp) {
+                    const expires = new Date(exp * 1000).toLocaleString();
+                    statusHtml += `<div class="stat">Expires: <strong>${expires}</strong></div>`;
+                }
+                
+                status.innerHTML = statusHtml;
+                status.style.display = 'flex';
+                
+            } catch (e) {
+                output.innerHTML = `<span style="color: var(--error);">Error: ${e.message}</span>`;
+                status.style.display = 'none';
+            }
+        }
+        
+        // Regex Debugger
+        function testRegex() {
+            const pattern = document.getElementById('regex-pattern').value;
+            const flags = document.getElementById('regex-flags').value;
+            const input = document.getElementById('regex-input').value;
+            const output = document.getElementById('regex-output');
+            const countEl = document.getElementById('regex-match-count');
+            
+            try {
+                const regex = new RegExp(pattern, flags);
+                const matches = [...input.matchAll(new RegExp(pattern, flags.includes('g') ? flags : flags + 'g'))];
+                
+                countEl.textContent = `${matches.length} match${matches.length !== 1 ? 'es' : ''}`;
+                
+                let html = '<div style="line-height: 2;">';
+                let lastIndex = 0;
+                
+                matches.forEach((match, i) => {
+                    html += escapeHtml(input.slice(lastIndex, match.index));
+                    html += `<span style="background: rgba(99, 102, 241, 0.3); border-bottom: 2px solid var(--primary); padding: 2px 4px; border-radius: 2px;" title="Match ${i + 1}">${escapeHtml(match[0])}</span>`;
+                    lastIndex = match.index + match[0].length;
+                });
+                
+                html += escapeHtml(input.slice(lastIndex));
+                html += '</div>';
+                
+                if (matches.length > 0) {
+                    html += '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--surface-light);">';
+                    html += '<div style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.5rem;">MATCH DETAILS:</div>';
+                    matches.forEach((match, i) => {
+                        html += `<div style="font-family: monospace; font-size: 0.875rem; margin-bottom: 0.25rem;">`;
+                        html += `<span style="color: var(--accent);">Match ${i + 1}:</span> <span style="color: var(--success);">"${match[0]}"</span>`;
+                        if (match.length > 1) {
+                            for (let g = 1; g < match.length; g++) {
+                                html += ` <span style="color: var(--text-muted);">Group ${g}:</span> <span style="color: var(--warning);">"${match[g]}"</span>`;
+                            }
+                        }
+                        html += `</div>`;
+                    });
+                    html += '</div>';
+                }
+                
+                output.innerHTML = html;
+            } catch (e) {
+                output.innerHTML = `<span style="color: var(--error);">Invalid Regex: ${e.message}</span>`;
+                countEl.textContent = 'Error';
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function showRegexCheatsheet() {
+            const cheatsheet = `
+<b>Common Patterns:</b>
+.          - Any character
+\\d         - Digit [0-9]
+\\w         - Word character [a-zA-Z0-9_]
+\\s         - Whitespace
+\\b         - Word boundary
+^          - Start of string
+$          - End of string
+
+<b>Quantifiers:</b>
+*          - 0 or more
++          - 1 or more
+?          - 0 or 1
+{n}        - Exactly n times
+{n,m}      - Between n and m times
+
+<b>Groups:</b>
+(ab)        - Capture group
+(?:ab)      - Non-capturing group
+(?=ab)      - Lookahead
+(?!ab)      - Negative lookahead
+
+<b>Flags:</b>
+g          - Global (all matches)
+i          - Case insensitive
+m          - Multiline
+s          - Dotall (. matches newline)
+            `;
+            alert(cheatsheet);
+        }
+        
+        document.getElementById('regex-pattern').addEventListener('input', testRegex);
+        document.getElementById('regex-flags').addEventListener('input', testRegex);
+        document.getElementById('regex-input').addEventListener('input', testRegex);
+        
+        // SQL Formatter
+        function loadSampleSQL() {
+            document.getElementById('sql-input').value = "SELECT u.id, u.name, u.email, o.total, o.created_at FROM users u INNER JOIN orders o ON u.id = o.user_id WHERE o.created_at > '2024-01-01' AND o.status = 'completed' ORDER BY o.created_at DESC LIMIT 100";
+            formatSQL();
+        }
+        
+        function formatSQL() {
+            const input = document.getElementById('sql-input').value;
+            const keywords = ['SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'ON', 'GROUP BY', 'ORDER BY', 'HAVING', 'LIMIT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP', 'VALUES', 'SET', 'INTO'];
+            
+            let formatted = input;
+            keywords.forEach(kw => {
+                const regex = new RegExp(`\\b${kw}\\b`, 'gi');
+                formatted = formatted.replace(regex, '\n' + kw);
+            });
+            
+            formatted = formatted.replace(/^\n/, '').replace(/\n\s*\n/g, '\n');
+            
+            const highlighted = formatted
+                .replace(/\b(SELECT|FROM|WHERE|AND|OR|INNER|LEFT|RIGHT|JOIN|ON|GROUP|BY|ORDER|HAVING|LIMIT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|VALUES|SET|INTO)\b/gi, '<span class="keyword">$1</span>')
+                .replace(/('(?:[^'\\]|\\.)*')/g, '<span class="string">$1</span>')
+                .replace(/\b(\d+)\b/g, '<span class="number">$1</span>')
+                .replace(/(--.*$)/gm, '<span class="comment">$1</span>');
+            
+            document.getElementById('sql-output').innerHTML = highlighted;
+        }
+        
+        function minifySQL() {
+            const input = document.getElementById('sql-input').value;
+            const minified = input.replace(/\s+/g, ' ').trim();
+            document.getElementById('sql-output').textContent = minified;
+        }
+        
+        // Code Screenshot
+        const codeThemes = {
+            monokai: {
+                bg: '#272822',
+                text: '#f8f8f2',
+                keyword: '#66d9ef',
+                string: '#e6db74',
+                comment: '#75715e',
+                function: '#a6e22e',
+                number: '#ae81ff',
+                operator: '#f92672',
+                class: '#a6e22e',
+                variable: '#fd971f',
+                lineNum: '#90918b'
+            },
+            dracula: {
+                bg: '#282a36',
+                text: '#f8f8f2',
+                keyword: '#ff79c6',
+                string: '#f1fa8c',
+                comment: '#6272a4',
+                function: '#50fa7b',
+                number: '#bd93f9',
+                operator: '#ff79c6',
+                class: '#8be9fd',
+                variable: '#f8f8f2',
+                lineNum: '#6272a4'
+            },
+            github: {
+                bg: '#0d1117',
+                text: '#c9d1d9',
+                keyword: '#ff7b72',
+                string: '#a5d6ff',
+                comment: '#8b949e',
+                function: '#d2a8ff',
+                number: '#79c0ff',
+                operator: '#ff7b72',
+                class: '#ffa657',
+                variable: '#c9d1d9',
+                lineNum: '#484f58'
+            },
+            nord: {
+                bg: '#2e3440',
+                text: '#eceff4',
+                keyword: '#81a1c1',
+                string: '#a3be8c',
+                comment: '#616e88',
+                function: '#88c0d0',
+                number: '#b48ead',
+                operator: '#81a1c1',
+                class: '#8fbcbb',
+                variable: '#d8dee9',
+                lineNum: '#4c566a'
+            }
+        };
+
+        function highlightCode(code, lang, theme) {
+            const colors = codeThemes[theme] || codeThemes.monokai;
+            
+            const keywords = {
+                javascript: ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'new', 'this', 'class', 'extends', 'import', 'export', 'from', 'default', 'try', 'catch', 'finally', 'throw', 'async', 'await', 'yield', 'typeof', 'instanceof', 'in', 'of', 'true', 'false', 'null', 'undefined'],
+                python: ['def', 'class', 'if', 'elif', 'else', 'for', 'while', 'return', 'import', 'from', 'as', 'try', 'except', 'finally', 'raise', 'with', 'yield', 'lambda', 'pass', 'break', 'continue', 'True', 'False', 'None', 'and', 'or', 'not', 'in', 'is', 'self', 'print'],
+                typescript: ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'new', 'this', 'class', 'extends', 'import', 'export', 'from', 'default', 'try', 'catch', 'finally', 'throw', 'async', 'await', 'type', 'interface', 'enum', 'namespace', 'public', 'private', 'protected', 'readonly', 'abstract', 'implements', 'keyof', 'typeof', 'instanceof', 'in', 'of', 'true', 'false', 'null', 'undefined'],
+                rust: ['fn', 'let', 'mut', 'const', 'if', 'else', 'for', 'while', 'loop', 'match', 'return', 'struct', 'enum', 'impl', 'trait', 'pub', 'use', 'mod', 'crate', 'self', 'super', 'where', 'async', 'await', 'move', 'ref', 'static', 'unsafe', 'true', 'false', 'Some', 'None', 'Ok', 'Err', 'Self'],
+                go: ['func', 'var', 'const', 'if', 'else', 'for', 'range', 'return', 'struct', 'interface', 'package', 'import', 'type', 'map', 'chan', 'go', 'select', 'case', 'default', 'break', 'continue', 'fallthrough', 'defer', 'true', 'false', 'nil', 'make', 'new', 'append', 'len', 'cap'],
+                java: ['public', 'private', 'protected', 'static', 'final', 'abstract', 'class', 'interface', 'extends', 'implements', 'new', 'this', 'super', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'return', 'try', 'catch', 'finally', 'throw', 'throws', 'void', 'int', 'float', 'double', 'boolean', 'char', 'String', 'true', 'false', 'null'],
+                cpp: ['int', 'float', 'double', 'char', 'bool', 'void', 'auto', 'const', 'static', 'extern', 'register', 'volatile', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'return', 'class', 'struct', 'union', 'enum', 'typedef', 'namespace', 'template', 'typename', 'virtual', 'override', 'new', 'delete', 'nullptr', 'true', 'false'],
+                csharp: ['public', 'private', 'protected', 'internal', 'static', 'readonly', 'class', 'struct', 'interface', 'enum', 'namespace', 'using', 'if', 'else', 'for', 'foreach', 'while', 'do', 'switch', 'case', 'break', 'continue', 'return', 'try', 'catch', 'finally', 'throw', 'new', 'this', 'base', 'var', 'int', 'float', 'double', 'bool', 'string', 'true', 'false', 'null'],
+                php: ['function', 'class', 'if', 'else', 'elseif', 'for', 'foreach', 'while', 'do', 'switch', 'case', 'break', 'continue', 'return', 'try', 'catch', 'finally', 'throw', 'new', 'echo', 'print', 'var', 'public', 'private', 'protected', 'static', 'const', 'true', 'false', 'null', 'array', 'string', 'int', 'float', 'bool'],
+                ruby: ['def', 'class', 'module', 'if', 'elsif', 'else', 'unless', 'for', 'while', 'until', 'do', 'end', 'return', 'yield', 'raise', 'begin', 'rescue', 'ensure', 'try', 'catch', 'new', 'self', 'nil', 'true', 'false', 'puts', 'print', 'require', 'include', 'extend'],
+                swift: ['func', 'var', 'let', 'if', 'else', 'for', 'while', 'repeat', 'switch', 'case', 'default', 'break', 'continue', 'return', 'class', 'struct', 'enum', 'protocol', 'extension', 'import', 'public', 'private', 'internal', 'static', 'mutating', 'throws', 'try', 'catch', 'true', 'false', 'nil', 'self', 'super'],
+                kotlin: ['fun', 'val', 'var', 'if', 'else', 'for', 'while', 'do', 'when', 'return', 'class', 'object', 'interface', 'enum', 'data', 'sealed', 'abstract', 'open', 'private', 'protected', 'internal', 'public', 'override', 'import', 'package', 'try', 'catch', 'finally', 'throw', 'true', 'false', 'null', 'this', 'super'],
+                sql: ['SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'NOT', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE', 'CREATE', 'TABLE', 'ALTER', 'DROP', 'INDEX', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'OUTER', 'ON', 'GROUP', 'BY', 'ORDER', 'HAVING', 'LIMIT', 'OFFSET', 'AS', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'NULL', 'IS', 'IN', 'BETWEEN', 'LIKE', 'EXISTS'],
+                html: ['DOCTYPE', 'html', 'head', 'body', 'div', 'span', 'p', 'a', 'img', 'br', 'hr', 'input', 'script', 'style', 'link', 'meta', 'title'],
+                css: ['color', 'background', 'margin', 'padding', 'border', 'display', 'position', 'width', 'height', 'font', 'text', 'flex', 'grid', 'animation', 'transition', 'transform', 'opacity', 'overflow', 'z-index'],
+                json: ['true', 'false', 'null'],
+                yaml: ['true', 'false', 'null', 'yes', 'no'],
+                bash: ['if', 'then', 'else', 'elif', 'fi', 'for', 'while', 'do', 'done', 'case', 'esac', 'function', 'return', 'exit', 'echo', 'export', 'source', 'local', 'readonly', 'declare', 'unset', 'shift', 'set', 'eval', 'exec', 'true', 'false'],
+                markdown: []
+            };
+
+            const langKeywords = keywords[lang] || keywords.javascript;
+            
+            let highlighted = escapeHtml(code);
+            
+            // Highlight comments
+            highlighted = highlighted.replace(/(\/\/.*$)/gm, '<span style="color: ' + colors.comment + '">$1</span>');
+            highlighted = highlighted.replace(/(\/\*[\s\S]*?\*\/)/g, '<span style="color: ' + colors.comment + '">$1</span>');
+            highlighted = highlighted.replace(/(#.*$)/gm, function(match) {
+                if (lang === 'python' || lang === 'ruby' || lang === 'bash' || lang === 'yaml') {
+                    return '<span style="color: ' + colors.comment + '">' + match + '</span>';
+                }
+                return match;
+            });
+            
+            // Highlight strings
+            highlighted = highlighted.replace(/(&#39;[^&#]*?&#39;)/g, '<span style="color: ' + colors.string + '">$1</span>');
+            highlighted = highlighted.replace(/(&quot;[^&]*?&quot;)/g, '<span style="color: ' + colors.string + '">$1</span>');
+            highlighted = highlighted.replace(/(`[^`]*?`)/g, '<span style="color: ' + colors.string + '">$1</span>');
+            
+            // Highlight numbers
+            highlighted = highlighted.replace(/\b(\d+\.?\d*)\b/g, '<span style="color: ' + colors.number + '">$1</span>');
+            
+            // Highlight keywords
+            langKeywords.forEach(function(keyword) {
+                var regex = new RegExp('\\b(' + keyword + ')\\b', 'g');
+                highlighted = highlighted.replace(regex, '<span style="color: ' + colors.keyword + '">$1</span>');
+            });
+            
+            // Highlight function calls
+            highlighted = highlighted.replace(/\b([a-zA-Z_]\w*)\s*\(/g, '<span style="color: ' + colors.function + '">$1</span>(');
+            
+            return highlighted;
+        }
+
+        function generateCodeImage() {
+            const code = document.getElementById('code-img-input').value;
+            const lang = document.getElementById('code-lang').value;
+            const theme = document.getElementById('code-theme').value;
+            const colors = codeThemes[theme] || codeThemes.monokai;
+            
+            document.getElementById('code-img-preview').style.background = colors.bg;
+            
+            const lines = code.split('\n');
+            let html = '';
+            
+            lines.forEach((line, i) => {
+                const highlightedLine = highlightCode(line, lang, theme);
+                html += `<div style="display: flex;"><span style="color: ${colors.lineNum}; min-width: 3rem; text-align: right; padding-right: 1rem; user-select: none;">${i + 1}</span><span style="flex: 1;">${highlightedLine || ' '}</span></div>`;
+            });
+            
+            document.getElementById('code-img-display').innerHTML = html;
+        }
+        
+        function downloadCodeImage() {
+            const element = document.getElementById('code-img-preview');
+            html2canvas(element, {
+                backgroundColor: null,
+                scale: 2,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'code-screenshot.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('Image downloaded!');
+            }).catch(err => {
+                showToast('Error generating image: ' + err.message);
+            });
+        }
+        
+        function copyCodeImage() {
+            const element = document.getElementById('code-img-preview');
+            html2canvas(element, {
+                backgroundColor: null,
+                scale: 2,
+                useCORS: true
+            }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    navigator.clipboard.write([item]).then(() => {
+                        showToast('Image copied to clipboard!');
+                    }).catch(err => {
+                        showToast('Error copying image: ' + err.message);
+                    });
+                });
+            }).catch(err => {
+                showToast('Error generating image: ' + err.message);
+            });
+        }
+        
+        // Text Diff
+        function compareDiff() {
+            const left = document.getElementById('diff-left').value.split('\n');
+            const right = document.getElementById('diff-right').value.split('\n');
+            const output = document.getElementById('diff-output');
+            
+            let html = '<div style="font-family: monospace; font-size: 0.875rem;">';
+            
+            const maxLines = Math.max(left.length, right.length);
+            
+            for (let i = 0; i < maxLines; i++) {
+                const leftLine = left[i] || '';
+                const rightLine = right[i] || '';
+                
+                if (leftLine === rightLine) {
+                    html += `<div class="syntax-line"><span class="line-number">${i + 1}</span><span class="line-content">${escapeHtml(leftLine)}</span></div>`;
+                } else {
+                    if (leftLine) {
+                        html += `<div class="syntax-line diff-remove"><span class="line-number">${i + 1}</span><span class="line-content">- ${escapeHtml(leftLine)}</span></div>`;
+                    }
+                    if (rightLine) {
+                        html += `<div class="syntax-line diff-add"><span class="line-number">${i + 1}</span><span class="line-content">+ ${escapeHtml(rightLine)}</span></div>`;
+                    }
+                }
+            }
+            
+            html += '</div>';
+            output.innerHTML = html;
+        }
+        
+        function swapDiff() {
+            const left = document.getElementById('diff-left');
+            const right = document.getElementById('diff-right');
+            [left.value, right.value] = [right.value, left.value];
+        }
+        
+        // Color Tool
+        function generatePalette() {
+            const base = document.getElementById('color-base').value;
+            const palette = document.getElementById('color-palette');
+            
+            const colors = generateColorPalette(base);
+            
+            let html = '';
+            colors.forEach(color => {
+                html += `
+                    <div style="text-align: center;">
+                        <div style="background: ${color}; height: 80px; border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer;" onclick="copyText('${color}')"></div>
+                        <div style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">${color}</div>
+                    </div>
+                `;
+            });
+            
+            palette.innerHTML = html;
+        }
+        
+        function generateColorPalette(hex) {
+            const colors = [];
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            
+            for (let i = -2; i <= 2; i++) {
+                const factor = 1 + i * 0.2;
+                const nr = Math.min(255, Math.max(0, Math.round(r * factor)));
+                const ng = Math.min(255, Math.max(0, Math.round(g * factor)));
+                const nb = Math.min(255, Math.max(0, Math.round(b * factor)));
+                colors.push(`#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`);
+            }
+            
+            return colors;
+        }
+        
+        function randomColor() {
+            const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            document.getElementById('color-base').value = hex;
+            document.getElementById('color-hex').value = hex;
+            generatePalette();
+        }
+        
+        function checkContrast() {
+            const fg = document.getElementById('contrast-fg').value;
+            const bg = document.getElementById('contrast-bg').value;
+            const ratio = getContrastRatio(fg, bg);
+            const result = document.getElementById('contrast-result');
+            
+            const aaLarge = ratio >= 3;
+            const aa = ratio >= 4.5;
+            const aaaLarge = ratio >= 4.5;
+            const aaa = ratio >= 7;
+            
+            result.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;">
+                    <div style="flex: 1; padding: 1.5rem; background: ${bg}; color: ${fg}; border-radius: 8px; text-align: center; font-weight: 600;">
+                        Sample Text
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent);">${ratio.toFixed(2)}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Contrast Ratio</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+                    <div style="padding: 0.5rem; background: ${aa ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 4px; font-size: 0.75rem;">
+                        ${aa ? '✅' : '❌'} AA Normal
+                    </div>
+                    <div style="padding: 0.5rem; background: ${aaLarge ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 4px; font-size: 0.75rem;">
+                        ${aaLarge ? '✅' : '❌'} AA Large
+                    </div>
+                    <div style="padding: 0.5rem; background: ${aaa ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 4px; font-size: 0.75rem;">
+                        ${aaa ? '✅' : '❌'} AAA Normal
+                    </div>
+                    <div style="padding: 0.5rem; background: ${aaaLarge ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 4px; font-size: 0.75rem;">
+                        ${aaaLarge ? '✅' : '❌'} AAA Large
+                    </div>
+                </div>
+            `;
+        }
+        
+        function getContrastRatio(fg, bg) {
+            const l1 = getLuminance(fg);
+            const l2 = getLuminance(bg);
+            const lighter = Math.max(l1, l2);
+            const darker = Math.min(l1, l2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+        
+        function getLuminance(hex) {
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+            
+            const rs = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+            const gs = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+            const bs = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+            
+            return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+        }
+        
+        document.getElementById('color-base').addEventListener('input', (e) => {
+            document.getElementById('color-hex').value = e.target.value;
+            generatePalette();
+        });
+        
+        // Cron Helper
+        function updateCron() {
+            const min = document.getElementById('cron-minute').value || '*';
+            const hour = document.getElementById('cron-hour').value || '*';
+            const day = document.getElementById('cron-day').value || '*';
+            const month = document.getElementById('cron-month').value || '*';
+            const weekday = document.getElementById('cron-weekday').value || '*';
+            
+            const expression = `${min} ${hour} ${day} ${month} ${weekday}`;
+            document.getElementById('cron-expression').textContent = expression;
+            
+            // Calculate next executions
+            const nextExecs = getNextCronExecutions(min, hour, day, month, weekday, 5);
+            let html = '<div style="font-family: monospace;">';
+            nextExecs.forEach(exec => {
+                html += `<div style="padding: 0.5rem; border-bottom: 1px solid var(--surface-light);">${exec}</div>`;
+            });
+            html += '</div>';
+            document.getElementById('cron-next').innerHTML = html;
+        }
+        
+        function getNextCronExecutions(min, hour, day, month, weekday, count) {
+            // Simplified - just show relative times
+            const now = new Date();
+            const execs = [];
+            
+            for (let i = 1; i <= count; i++) {
+                const next = new Date(now.getTime() + i * 3600000);
+                execs.push(next.toLocaleString());
+            }
+            
+            return execs;
+        }
+        
+        function setCronPreset(expr) {
+            const parts = expr.split(' ');
+            document.getElementById('cron-minute').value = parts[0];
+            document.getElementById('cron-hour').value = parts[1];
+            document.getElementById('cron-day').value = parts[2];
+            document.getElementById('cron-month').value = parts[3];
+            document.getElementById('cron-weekday').value = parts[4];
+            updateCron();
+        }
+        
+        // Timestamp
+        function refreshTimestamp() {
+            const now = Math.floor(Date.now() / 1000);
+            document.getElementById('current-timestamp').textContent = now;
+            document.getElementById('current-date').textContent = new Date().toLocaleString();
+        }
+        
+        function timestampToDate() {
+            const ts = parseInt(document.getElementById('ts-to-date').value);
+            if (isNaN(ts)) {
+                document.getElementById('ts-to-date-result').textContent = 'Invalid timestamp';
+                return;
+            }
+            const date = new Date(ts * 1000);
+            document.getElementById('ts-to-date-result').textContent = date.toLocaleString();
+        }
+        
+        function dateToTimestamp() {
+            const date = new Date(document.getElementById('date-to-ts').value);
+            if (isNaN(date.getTime())) {
+                document.getElementById('date-to-ts-result').textContent = 'Invalid date';
+                return;
+            }
+            const ts = Math.floor(date.getTime() / 1000);
+            document.getElementById('date-to-ts-result').textContent = ts;
+        }
+        
+        // Hash Generator
+        function generateAllHashes() {
+            const input = document.getElementById('hash-input').value;
+            const output = document.getElementById('hash-output');
+            
+            const md5 = simpleHash(input, 32);
+            const sha1 = simpleHash(input, 40);
+            const sha256 = simpleHash(input, 64);
+            
+            output.innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <div style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.25rem;">MD5</div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <code style="flex: 1; padding: 0.5rem; background: var(--surface); border-radius: 4px; font-size: 0.875rem;">${md5}</code>
+                        <button class="btn btn-secondary" onclick="copyText('${md5}')" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Copy</button>
+                    </div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <div style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.25rem;">SHA-1</div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <code style="flex: 1; padding: 0.5rem; background: var(--surface); border-radius: 4px; font-size: 0.875rem;">${sha1}</code>
+                        <button class="btn btn-secondary" onclick="copyText('${sha1}')" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Copy</button>
+                    </div>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.25rem;">SHA-256</div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <code style="flex: 1; padding: 0.5rem; background: var(--surface); border-radius: 4px; font-size: 0.875rem;">${sha256}</code>
+                        <button class="btn btn-secondary" onclick="copyText('${sha256}')" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Copy</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function simpleHash(str, length) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            
+            const hex = Math.abs(hash).toString(16).padStart(Math.ceil(length / 2), '0');
+            return hex.repeat(Math.ceil(length / hex.length)).slice(0, length);
+        }
+        
+        function clearHashInput() {
+            document.getElementById('hash-input').value = '';
+            document.getElementById('hash-output').innerHTML = '';
+        }
+        
+        // AI Tools - Prompt Optimizer
+        function loadSamplePrompt() {
+            document.getElementById('prompt-input').value = 'Write a blog post about JavaScript';
+            optimizePrompt();
+        }
+        
+        function optimizePrompt() {
+            const input = document.getElementById('prompt-input').value;
+            const model = document.getElementById('prompt-model').value;
+            const task = document.getElementById('prompt-task').value;
+            
+            let optimized = '';
+            
+            // Basic prompt optimization rules
+            const roleMap = {
+                writing: 'You are a professional technical writer',
+                coding: 'You are an expert software developer',
+                analysis: 'You are a data analyst',
+                creative: 'You are a creative content specialist'
+            };
+            
+            const role = roleMap[task] || roleMap.writing;
+            
+            // Check if prompt needs optimization
+            if (input.length < 20) {
+                optimized = `${role}.\n\nTask: ${input}\n\nRequirements:\n1. Be specific and detailed\n2. Use clear structure\n3. Include examples if applicable\n4. Consider the target audience\n5. Maintain consistent tone`;
+            } else {
+                optimized = `${role}.\n\n${input}\n\nAdditional Guidelines:\n- Provide clear, actionable output\n- Use proper formatting\n- Include relevant examples\n- Consider edge cases`;
+            }
+            
+            // Add model-specific tips
+            if (model === 'gpt4') {
+                optimized += '\n\nNote: This prompt is optimized for GPT-4/Claude models which handle complex instructions well.';
+            } else if (model === 'gpt35') {
+                optimized += '\n\nNote: Keep instructions simple and direct for GPT-3.5 models.';
+            }
+            
+            document.getElementById('prompt-output').textContent = optimized;
+        }
+        
+        // Token Counter
+        function countTokens() {
+            const text = document.getElementById('token-input').value;
+            const words = text.split(/\s+/).filter(w => w.length > 0).length;
+            const chars = text.length;
+            const charsNoSpaces = text.replace(/\s/g, '').length;
+            const lines = text.split('\n').length;
+            
+            // Rough token estimation (1 token ≈ 4 chars for English, ~2 chars for CJK)
+            const estimatedTokens = Math.ceil(chars / 4);
+            const estimatedTokensCN = Math.ceil(chars / 2);
+            
+            // Reading time (average 200 words per minute)
+            const readingTime = Math.ceil(words / 200);
+            
+            const output = `
+📊 Text Statistics:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 Words:           ${words}
+🔤 Characters:      ${chars}
+🔡 Characters (no spaces): ${charsNoSpaces}
+📄 Lines:           ${lines}
+
+🎫 Token Estimation:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+English (~4 chars/token):  ~${estimatedTokens} tokens
+Chinese (~2 chars/token):  ~${estimatedTokensCN} tokens
+
+⏱️ Reading Time:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📖 ~${readingTime} minute(s) at 200 WPM
+
+💰 Cost Estimation (Input):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GPT-4o:          $${(estimatedTokens * 2.5 / 1000000).toFixed(6)}
+GPT-4o-mini:     $${(estimatedTokens * 0.15 / 1000000).toFixed(6)}
+Claude 3.5:      $${(estimatedTokens * 3 / 1000000).toFixed(6)}
+            `;
+            
+            document.getElementById('token-output').textContent = output;
+        }
+        
+        function clearTokenInput() {
+            document.getElementById('token-input').value = '';
+            document.getElementById('token-output').innerHTML = '';
+        }
+        
+        // JSON Schema Generator
+        function loadSampleSchema() {
+            document.getElementById('schema-input').value = JSON.stringify({
+                "name": "John Doe",
+                "age": 30,
+                "email": "john@example.com",
+                "is_active": true,
+                "tags": ["developer", "designer"],
+                "address": {
+                    "street": "123 Main St",
+                    "city": "New York"
+                }
+            }, null, 2);
+            generateSchema();
+        }
+        
+        function generateSchema() {
+            try {
+                const input = document.getElementById('schema-input').value;
+                const data = JSON.parse(input);
+                const schema = generateJSONSchema(data);
+                document.getElementById('schema-output').textContent = JSON.stringify(schema, null, 2);
+            } catch (e) {
+                document.getElementById('schema-output').textContent = 'Error: Invalid JSON - ' + e.message;
+            }
+        }
+        
+        function generateJSONSchema(obj) {
+            const schema = {
+                type: 'object',
+                properties: {},
+                required: []
+            };
+            
+            for (const key in obj) {
+                schema.properties[key] = getJSONType(obj[key]);
+                schema.required.push(key);
+            }
+            
+            return schema;
+        }
+        
+        function getJSONType(value) {
+            if (value === null) {
+                return { type: 'null' };
+            }
+            
+            if (Array.isArray(value)) {
+                if (value.length > 0) {
+                    return {
+                        type: 'array',
+                        items: getJSONType(value[0])
+                    };
+                }
+                return { type: 'array' };
+            }
+            
+            if (typeof value === 'object') {
+                const schema = {
+                    type: 'object',
+                    properties: {},
+                    required: []
+                };
+                for (const key in value) {
+                    schema.properties[key] = getJSONType(value[key]);
+                    schema.required.push(key);
+                }
+                return schema;
+            }
+            
+            if (typeof value === 'string') {
+                // Check if it's a date
+                if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
+                    return { type: 'string', format: 'date-time' };
+                }
+                // Check if it's an email
+                if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    return { type: 'string', format: 'email' };
+                }
+                return { type: 'string' };
+            }
+            
+            if (typeof value === 'number') {
+                return Number.isInteger(value) ? { type: 'integer' } : { type: 'number' };
+            }
+            
+            if (typeof value === 'boolean') {
+                return { type: 'boolean' };
+            }
+            
+            return { type: 'string' };
+        }
+        
+        // Regex Generator
+        const regexPatterns = {
+            email: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+            phone: '^\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}$',
+            url: '^https?:\\/\\/[\\w\\-]+(\\.[\\w\\-]+)+[\\/\\w\\-.~:/?#[\\]@!$&\'()*+,;=%]*$',
+            ip: '^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$',
+            date: '^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$',
+            hex: '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$'
+        };
+        
+        function setRegexPattern(type) {
+            document.getElementById('regex-gen-output').textContent = regexPatterns[type];
+        }
+        
+        function generateRegex() {
+            const desc = document.getElementById('regex-desc-input').value.toLowerCase();
+            
+            // Simple pattern matching based on description
+            if (desc.includes('email')) {
+                setRegexPattern('email');
+            } else if (desc.includes('phone')) {
+                setRegexPattern('phone');
+            } else if (desc.includes('url') || desc.includes('link')) {
+                setRegexPattern('url');
+            } else if (desc.includes('ip') || desc.includes('address')) {
+                setRegexPattern('ip');
+            } else if (desc.includes('date')) {
+                setRegexPattern('date');
+            } else if (desc.includes('color') || desc.includes('hex')) {
+                setRegexPattern('hex');
+            } else {
+                document.getElementById('regex-gen-output').textContent = 'Pattern not found. Try: email, phone, url, ip, date, or hex color';
+            }
+        }
+        
+        function testGeneratedRegex() {
+            const pattern = document.getElementById('regex-gen-output').textContent;
+            if (pattern && !pattern.includes('not found')) {
+                document.getElementById('regex-pattern').value = pattern;
+                showTool('regex');
+            }
+        }
+        
+        // Text Analysis Tools
+        function analyzeText() {
+            const text = document.getElementById('text-tools-input').value;
+            const words = text.split(/\s+/).filter(w => w.length > 0);
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+            
+            const wordCount = words.length;
+            const charCount = text.length;
+            const charNoSpaces = text.replace(/\s/g, '').length;
+            const sentenceCount = sentences.length;
+            const paragraphCount = paragraphs.length;
+            
+            // Average word length
+            const avgWordLength = words.length > 0 
+                ? (words.reduce((sum, w) => sum + w.length, 0) / words.length).toFixed(1)
+                : 0;
+            
+            // Average sentence length
+            const avgSentenceLength = sentenceCount > 0
+                ? (wordCount / sentenceCount).toFixed(1)
+                : 0;
+            
+            // Reading time (200 WPM)
+            const readingTime = Math.ceil(wordCount / 200);
+            
+            // Speaking time (150 WPM)
+            const speakingTime = Math.ceil(wordCount / 150);
+            
+            // Unique words
+            const uniqueWords = new Set(words.map(w => w.toLowerCase())).size;
+            
+            const output = `
+📊 Text Analysis Results
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 Word Statistics:
+   Total Words:           ${wordCount}
+   Unique Words:          ${uniqueWords}
+   Avg Word Length:       ${avgWordLength} characters
+
+📄 Character Statistics:
+   Characters (with spaces):    ${charCount}
+   Characters (no spaces):      ${charNoSpaces}
+
+📝 Sentence Statistics:
+   Total Sentences:       ${sentenceCount}
+   Avg Words/Sentence:    ${avgSentenceLength}
+
+📋 Paragraph Statistics:
+   Total Paragraphs:      ${paragraphCount}
+
+⏱️ Time Estimates:
+   Reading Time:          ~${readingTime} minute(s)
+   Speaking Time:         ~${speakingTime} minute(s)
+
+📈 Readability Indicators:
+   Vocabulary Richness:   ${((uniqueWords / wordCount) * 100).toFixed(1)}% unique words
+            `;
+            
+            document.getElementById('text-tools-output').textContent = output;
+        }
+        
+        // Color Palette Generator
+        function generateColorPalette() {
+            const baseHex = document.getElementById('palette-hex').value;
+            const scheme = document.getElementById('palette-scheme').value;
+            
+            const base = hexToHSL(baseHex);
+            let colors = [];
+            
+            switch(scheme) {
+                case 'complementary':
+                    colors = [
+                        baseHex,
+                        hslToHex((base.h + 180) % 360, base.s, base.l),
+                        hslToHex(base.h, base.s, Math.min(100, base.l + 20)),
+                        hslToHex(base.h, base.s, Math.max(0, base.l - 20)),
+                        hslToHex((base.h + 180) % 360, base.s, Math.min(100, base.l + 20))
+                    ];
+                    break;
+                case 'analogous':
+                    colors = [
+                        hslToHex((base.h - 30 + 360) % 360, base.s, base.l),
+                        hslToHex((base.h - 15 + 360) % 360, base.s, base.l),
+                        baseHex,
+                        hslToHex((base.h + 15) % 360, base.s, base.l),
+                        hslToHex((base.h + 30) % 360, base.s, base.l)
+                    ];
+                    break;
+                case 'triadic':
+                    colors = [
+                        baseHex,
+                        hslToHex((base.h + 120) % 360, base.s, base.l),
+                        hslToHex((base.h + 240) % 360, base.s, base.l),
+                        hslToHex(base.h, base.s, Math.min(100, base.l + 20)),
+                        hslToHex(base.h, base.s, Math.max(0, base.l - 20))
+                    ];
+                    break;
+                case 'split':
+                    colors = [
+                        baseHex,
+                        hslToHex((base.h + 150) % 360, base.s, base.l),
+                        hslToHex((base.h + 210) % 360, base.s, base.l),
+                        hslToHex(base.h, base.s, Math.min(100, base.l + 20)),
+                        hslToHex(base.h, base.s, Math.max(0, base.l - 20))
+                    ];
+                    break;
+                case 'shades':
+                    colors = [
+                        hslToHex(base.h, base.s, 90),
+                        hslToHex(base.h, base.s, 70),
+                        baseHex,
+                        hslToHex(base.h, base.s, 30),
+                        hslToHex(base.h, base.s, 20)
+                    ];
+                    break;
+            }
+            
+            const output = document.getElementById('palette-output');
+            output.innerHTML = colors.map(color => `
+                <div style="text-align: center;">
+                    <div style="background: ${color}; height: 80px; border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer; border: 2px solid var(--surface-light);" onclick="copyText('${color}')"></div>
+                    <div style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">${color}</div>
+                </div>
+            `).join('');
+        }
+        
+        function hexToHSL(hex) {
+            let r = parseInt(hex.slice(1, 3), 16) / 255;
+            let g = parseInt(hex.slice(3, 5), 16) / 255;
+            let b = parseInt(hex.slice(5, 7), 16) / 255;
+            
+            let max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0;
+            } else {
+                let d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+            
+            return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+        }
+        
+        function hslToHex(h, s, l) {
+            s /= 100;
+            l /= 100;
+            let c = (1 - Math.abs(2 * l - 1)) * s;
+            let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            let m = l - c / 2;
+            let r = 0, g = 0, b = 0;
+            
+            if (0 <= h && h < 60) { r = c; g = x; b = 0; }
+            else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
+            else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
+            else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
+            else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
+            else if (300 <= h && h < 360) { r = c; g = 0; b = x; }
+            
+            r = Math.round((r + m) * 255).toString(16).padStart(2, '0');
+            g = Math.round((g + m) * 255).toString(16).padStart(2, '0');
+            b = Math.round((b + m) * 255).toString(16).padStart(2, '0');
+            
+            return `#${r}${g}${b}`;
+        }
+        
+        // Contact Form Handler
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const subject = document.getElementById('contact-subject').value;
+            const message = document.getElementById('contact-message').value;
+            
+            // In a real implementation, you would send this data to your server
+            // For now, we'll show a success message
+            showToast('Message sent! We\'ll get back to you soon.');
+            
+            // Reset form
+            document.getElementById('contact-form').reset();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle URL hash navigation
+            handleHashNavigation();
+            
+            // Initialize tools
+            renderJSONTree();
+            generatePalette();
+            refreshTimestamp();
+            setInterval(refreshTimestamp, 1000);
+            updateCron();
+            generateCodeImage();
+            analyzeText();
+            generateColorPalette();
+        });
+    </script>
+</body>
+</html>
