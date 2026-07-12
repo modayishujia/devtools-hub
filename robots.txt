@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://devtoolshub.com/sitemap.xml
-
-# Crawl-delay
-Crawl-delay: 1
