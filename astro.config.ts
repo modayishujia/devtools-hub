@@ -1,73 +1,102 @@
-import {
-  defineConfig,
-  envField,
-  svgoOptimizer,
-} from "astro/config";
-import tailwindcss from "@tailwindcss/vite";
-import mdx from "@astrojs/mdx";
-import sitemap from "@astrojs/sitemap";
-import { unified } from "@astrojs/markdown-remark";
-import remarkToc from "remark-toc";
-import remarkCollapse from "remark-collapse";
-import rehypeCallouts from "rehype-callouts";
-import {
-  transformerNotationDiff,
-  transformerNotationHighlight,
-  transformerNotationWordHighlight,
-} from "@shikijs/transformers";
-import { transformerFileName } from "./src/utils/transformers/fileName";
-import config from "./astro-paper.config";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+import { defineConfig } from 'astro/config';
+
+import { unified } from '@astrojs/markdown-remark';
+
+import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
+import mdx from '@astrojs/mdx';
+import partytown from '@astrojs/partytown';
+import icon from 'astro-icon';
+import compress from 'astro-compress';
+import type { AstroIntegration } from 'astro';
+
+import astrowind from './vendor/integration';
+
+import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin } from './src/utils/frontmatter';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const hasExternalScripts = false;
+const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroIntegration)[] = []) =>
+  hasExternalScripts ? (Array.isArray(items) ? items.map((item) => item()) : [items()]) : [];
 
 export default defineConfig({
-  site: config.site.url,
+  output: 'static',
+
   integrations: [
+    sitemap(),
     mdx(),
-    sitemap({
-      filter: page =>
-        config.features?.showArchives !== false || !page.endsWith("/archives/"),
+    icon({
+      include: {
+        tabler: ['*'],
+        'flat-color-icons': [
+          'template',
+          'gallery',
+          'approval',
+          'document',
+          'advertising',
+          'currency-exchange',
+          'voice-presentation',
+          'business-contact',
+          'database',
+        ],
+      },
+    }),
+
+    ...whenExternalScripts(() =>
+      partytown({
+        config: { forward: ['dataLayer.push'] },
+      })
+    ),
+
+    compress({
+      CSS: true,
+      HTML: {
+        'html-minifier-terser': {
+          removeAttributeQuotes: false,
+        },
+      },
+      Image: false,
+      JavaScript: true,
+      SVG: false,
+      Logger: 1,
+    }),
+
+    astrowind({
+      config: './src/config.yaml',
     }),
   ],
-  i18n: {
-    locales: ["en", "zh-CN"],
-    defaultLocale: "zh-CN",
-    routing: {
-      prefixDefaultLocale: false,
-    },
+
+  image: {
+    // Astro's default Sharp service handles local images.
+    //
+    // Most remote CDN images (Unsplash, Cloudinary, Imgix…) are routed by
+    // src/components/common/Image.astro through `unpic`, which rewrites the
+    // URL with CDN-side query parameters and serves it straight from the
+    // provider — Astro never downloads it, so they don't need to be listed.
+    //
+    // `domains` only matters for remote URLs that fall through to Astro's
+    // native <Image /> (i.e. providers Unpic can't detect, like Pixabay).
+    // Listed entries are authorized to be processed by Sharp.
+    domains: ['cdn.pixabay.com'],
   },
+
   markdown: {
     processor: unified({
-      remarkPlugins: [
-        remarkToc,
-        [remarkCollapse, { test: "Table of contents" }],
-      ],
-      rehypePlugins: [rehypeCallouts],
+      remarkPlugins: [readingTimeRemarkPlugin],
+      rehypePlugins: [responsiveTablesRehypePlugin],
     }),
-    shikiConfig: {
-      themes: { light: "min-light", dark: "night-owl" },
-      defaultColor: false,
-      wrap: false,
-      transformers: [
-        transformerFileName({ style: "v2", hideDot: false }),
-        transformerNotationHighlight(),
-        transformerNotationWordHighlight(),
-        transformerNotationDiff({ matchAlgorithm: "v3" }),
-      ],
-    },
   },
+
   vite: {
     plugins: [tailwindcss()],
-  },
-  fonts: [],
-  env: {
-    schema: {
-      PUBLIC_GOOGLE_SITE_VERIFICATION: envField.string({
-        access: "public",
-        context: "client",
-        optional: true,
-      }),
+    resolve: {
+      alias: {
+        '~': path.resolve(__dirname, './src'),
+      },
     },
-  },
-  experimental: {
-    svgOptimizer: svgoOptimizer(),
   },
 });

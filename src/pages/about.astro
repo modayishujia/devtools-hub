@@ -1,36 +1,97 @@
 ---
-import { getEntry, render } from "astro:content";
-import Layout from "@/layouts/Layout.astro";
-import Header from "@/components/Header.astro";
-import Breadcrumb from "@/components/Breadcrumb.astro";
-import Main from "@/components/Main.astro";
-import Footer from "@/components/Footer.astro";
-import config from "@/config";
+import Features2 from '~/components/widgets/Features2.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Steps2 from '~/components/widgets/Steps2.astro';
+import Layout from '~/layouts/PageLayout.astro';
 
-const about = await getEntry("pages", "about");
-
-if (!about) {
-  throw new Error(
-    "Missing content entry: `about.md` or `about.mdx` in `src/content/pages/`"
-  );
-}
-
-const { Content } = await render(about);
+const metadata = {
+  title: '关于',
+};
 ---
 
-<Layout
-  title={`${about.data.title} | ${config.site.title}`}
-  description={about.data.description}
-  ogImage={about.data.ogImage}
-  canonicalURL={about.data.canonicalURL}
->
-  <Header />
+<Layout metadata={metadata}>
+  <Hero
+    tagline="by 莫说闲话"
+  >
+    <Fragment slot="title">
+      用数据看世界，<br />
+      <span class="text-accent dark:text-white">用文字说真话。</span>
+    </Fragment>
 
-  <Breadcrumb />
+    <Fragment slot="subtitle">
+      我是一个 AI 产业观察者，从投资视角看科技。关注 AI 大模型、半导体、新能源汽车、消费电子。在微博、小红书、公众号上以「莫说闲话」的名义写行业分析和深度评论。这个博客是我的长文沉淀地——那些在社交媒体上放不下的思考，都留在这里。
+    </Fragment>
+  </Hero>
 
-  <Main pageTitle={about.data.title} class="app-prose">
-    <Content />
-  </Main>
+  <Steps2
+    title="写什么"
+    subtitle="不追热点，只写有结构性洞察的内容。"
+    items={[
+      {
+        title: 'AI 产业观察',
+        description: '大模型竞赛、算力博弈、AI商业化困境、独立实验室崛起。从 DeepSeek 到 SemiAnalysis，从 HBM 毛利 90% 到 Meta 千亿 Capex。',
+        icon: 'tabler:brain',
+      },
+      {
+        title: '汽车科技',
+        description: '小米造车、特斯拉 FSD、蔚来换电飞轮、坦克300混动。不只是产品测评，更是产业链和商业模式的拆解。',
+        icon: 'tabler:car',
+      },
+      {
+        title: '半导体与资本',
+        description: 'SK海力士ADR、高盛做多中国AI、存储芯片定价权。跨境资本流动、产业链博弈、投资逻辑分析。',
+        icon: 'tabler:cpu',
+      },
+      {
+        title: '效率与工具',
+        description: 'AI编程 Agent、Loop Engineering、小红书文案框架。让 AI 真正干活，而不是聊天。',
+        icon: 'tabler:tool',
+      },
+    ]}
+  />
 
-  <Footer />
+  <Steps2
+    title="在哪里找到我"
+    isReversed={true}
+    items={[
+      {
+        title: '微博：莫说闲话',
+        description: '日常行业评论、热点速评、数据图表。短平快，有态度。',
+        icon: 'tabler:message',
+      },
+      {
+        title: '小红书：莫说闲话',
+        description: '图文笔记，视觉化呈现行业数据和趋势分析。',
+        icon: 'tabler:photo',
+      },
+      {
+        title: 'X (Twitter)：@iGaves',
+        description: '英文内容，面向全球投资者和科技从业者。',
+        icon: 'tabler:brand-twitter',
+      },
+      {
+        title: '公众号：莫说闲话',
+        description: '深度长文，完整的行业分析报告。',
+        icon: 'tabler:brand-wechat',
+      },
+    ]}
+  />
+
+  <Features2
+    title="联系"
+    tagline="Get in touch"
+    columns={2}
+    items={[
+      {
+        title: '邮箱',
+        description: 'support@dxtools.top',
+        icon: 'tabler:mail',
+      },
+      {
+        title: 'X (Twitter)',
+        description: '@iGaves',
+        icon: 'tabler:brand-twitter',
+      },
+    ]}
+  />
 </Layout>
