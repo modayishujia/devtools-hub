@@ -1,16 +1,74 @@
 ---
-// This page redirects to /blog
+import Layout from '~/layouts/PageLayout.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
+
+const metadata = {
+  title: 'DX Tools by 莫说闲话',
+  ignoreTitleTemplate: true,
+};
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0;url=/blog" />
-    <link rel="canonical" href="https://dxtools.top/blog" />
-    <title>DX Tools</title>
-  </head>
-  <body>
-    <a href="/blog">正在跳转...</a>
-  </body>
-</html>
+<Layout metadata={metadata}>
+  <Hero
+    actions={[
+      {
+        variant: 'primary',
+        text: '查看博客',
+        href: '/blog',
+      },
+      {
+        text: 'AI 算力看板',
+        href: 'https://view.dxtools.top',
+        target: '_blank',
+      },
+    ]}
+  >
+    <Fragment slot="title">
+      数据驱动的<br />
+      <span class="text-accent dark:text-white">AI 产业观察</span>
+    </Fragment>
+
+    <Fragment slot="subtitle">
+      AI 算力资本流向、半导体产业链、新能源汽车、投资分析。<br class="hidden sm:inline" />
+      by 莫说闲话 — 用数据看世界，用文字说真话。
+    </Fragment>
+  </Hero>
+
+  <Features2
+    title="产品"
+    subtitle="数据工具与深度内容"
+    columns={2}
+    items={[
+      {
+        title: '📊 AI 算力资本流向看板',
+        description:
+          '实时追踪全球 AI 基础设施资本流动。覆盖超大规模厂商 Capex、数据中心交易、存储芯片价格、HBM 供需、算力供给风险信号。每周更新，含 AI 解读。',
+        icon: 'tabler:chart-dots',
+        callToAction: {
+          text: '访问看板',
+          href: 'https://view.dxtools.top',
+          target: '_blank',
+          variant: 'secondary',
+        },
+      },
+      {
+        title: '📝 深度分析博客',
+        description:
+          'AI 产业观察、汽车科技拆解、半导体资本博弈、效率工具实践。不追热点，只写有结构性洞察的长文。',
+        icon: 'tabler:article',
+        callToAction: {
+          text: '阅读文章',
+          href: '/blog',
+          variant: 'secondary',
+        },
+      },
+    ]}
+  />
+
+  <BlogLatestPosts
+    title="最新文章"
+    information=""
+  />
+</Layout>
