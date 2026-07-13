@@ -3,7 +3,7 @@ import { getPermalink, getBlogPermalink, getAsset, cleanSlug } from './utils/per
 export const headerData = {
   links: [
     {
-      text: '博客',
+      text: '文章',
       href: getBlogPermalink(),
     },
     {
