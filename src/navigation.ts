@@ -1,4 +1,4 @@
-import { getPermalink, getBlogPermalink, getAsset } from './utils/permalinks';
+import { getPermalink, getBlogPermalink, getAsset, cleanSlug } from './utils/permalinks';
 
 export const headerData = {
   links: [
@@ -19,10 +19,11 @@ export const footerData = {
     {
       title: '分类',
       links: [
-        { text: 'AI观察', href: getPermalink('/category/ai-观察', 'category') },
-        { text: '汽车', href: getPermalink('/category/汽车', 'category') },
-        { text: '半导体', href: getPermalink('/category/半导体', 'category') },
-        { text: '科技商业', href: getPermalink('/category/科技商业', 'category') },
+        { text: 'AI观察', href: getPermalink(cleanSlug('AI观察'), 'category') },
+        { text: '汽车', href: getPermalink(cleanSlug('汽车'), 'category') },
+        { text: '半导体', href: getPermalink(cleanSlug('半导体'), 'category') },
+        { text: '科技商业', href: getPermalink(cleanSlug('科技商业'), 'category') },
+        { text: '营销', href: getPermalink(cleanSlug('营销'), 'category') },
       ],
     },
     {
